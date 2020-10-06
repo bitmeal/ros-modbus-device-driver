@@ -1,0 +1,213 @@
+# ros modbus device interface
+
+## slave device definition
+Define a slave device to interact with, as a JSON object, by giving it a `name`-property and configuring its `mapping` for:
+* Coils [`coils`] (digital I/O *rw*) by assigning an address-value to a key as its identifier
+* Discrete inputs [`discrete_inputs`] (digital IN *ro*) like the coils
+* Holding registers [`holding_registers`] (analog I/O, process data *rw*)
+* Input registers [`input_registers`] (analog IN, process data *ro*) like the holding registers
+*for the used terminology, refer to [1] section 4.3*
+
+Furthermore, configure the connection parameters for your slave-device:
+* `address`
+* `port`
+* `unit` (modbus unit ID).
+
+### mapping coils & discrete inputs
+Coils an discrete inputs store/accept *boolean* values (single bit). Coils allow for read and write access, discrete inputs allow read access only.
+  
+
+They are configured as a map, using the desired names as keys and their addresses as assigned values:
+```jsonc
+// coils and discrete input configuration example
+{
+    "coils": {
+        "coil_name": 1,
+        // ...
+    },
+    "discrete_inputs": {
+        "input_name": 10001,
+        // ...
+    }
+}
+```
+
+### maping holding & input registers
+Registers are 16 bit wide memory-"blocks" that can be read (input and holding registers) and written to (holding registers only). Registers may be configured to hold (a subset of) the data types defined in **IEC 61131-3** [2]. The types may be wider than 16 bits; in your register configuration you simply specify the start address (lowest address value occupied by a word of the value to be read). Registers are configured in a map with the desired name as key and a map with information about the stored/written type as `type` and the address as `address` as assigned value.
+
+See sections and table below for available types and their specification.
+
+```jsonc
+// register configuration example
+{
+    "holding_registers": {
+        "register_name": {
+            "address": 30001,
+            "type": "WORD"
+        },
+        // ...
+    },
+    "input_registers": {
+        "input_name": {
+            "address": 30002,
+            "type": "BYTE",
+            "offset": "high"
+        },
+        // ...
+    },
+}
+```
+
+
+#### 8 bit values (1B/8b)
+**Two 8 bit values can be decoded from one register.** For all supported 8 bit values (`BYTE`, `SINT`, `USINT`), an `offset` has to be specified as `"low"` or `"high"`. `"high"` being the first byte transmitted when byte order is *big endian (default)*, respectively the second byte on *little endian* encoding.
+
+**The meaning of your `offset` varies with your configured *byte order***.
+```jsonc
+{
+    "highregister": {
+        "address": 30001,
+        "type": "BYTE",
+        "offset": "high"
+    },
+    "lowregister": {
+        // ⚡ note the same address value as above 
+        "address": 30001,
+        "type": "BYTE",
+        "offset": "low"
+    }
+}
+```
+
+#### strings
+Strings require an additional `length` field to be provided! Strings may only consist of 8 bit wide characters, where each 16 bit register holds two characters. The string is read from the given starting address. Length may be an uneven number. ***TODO: will be trimmed?***
+```jsonc
+{
+    "somestring": {
+        "address": 30010,
+        "type": "STRING",
+        "length": 8
+    }
+}
+```
+
+#### boolean values
+*Directly decoding `BOOL` from a register is not supported. Boolean values should be mapped as coils/discrete input or read as `BYTE`, `WORD`, `DWORD`, `LWORD` and read from the resulting array of boolean values.*
+
+#### arrays
+TOOD: all as array?
+
+#### list of types
+|Type       | Bits  | Registers | Representation    | Info              |
+|:----------|------:|----------:|:------------------|:------------------|
+| `BYTE`    |  8    | 1/2		| Bool[8]           | requires `offset` |
+| `WORD`    | 16    | 1		    | Bool[16]          |                   |
+| `DWORD`   | 32    | 2 		| Bool[32]          |                   |
+| `LWORD`   | 64    | 4	    	| Bool[64]          |                   |
+|           |                   |                   |                   |
+| `SINT`    |  8    | 1/2		| Int8              | requires `offset` |
+| `INT`     | 16    | 1	    	| Int16             |                   |
+| `DINT`    | 32    | 2	    	| Int32             |                   |
+| `LINT`    | 64    | 4	    	| Int64             |                   |
+|           |                   |                   |                   |
+| `USINT`   |  8    | 1/2		| UInt8             | requires `offset` |
+| `UINT`    | 16    | 1		    | UInt16            |                   |
+| `UDINT`   | 32    | 2		    | UInt32            |                   |
+| `ULINT`   | 64    | 4		    | UInt64            |                   |
+|           |       |           |                   |                   |
+| `REAL`    | 32    | 2		    | Float32           |                   |
+| `LREAL`   | 64    | 4		    | Float64           |                   |
+|           |       |           |                   |                   |
+| `CHAR`    |  8    | 1/2		| Char              | requires `offset` |
+| `STRING`  |  -    | `length`/2| String            | requires `length` |
+
+
+### read optimization
+When configuring coils and registers that are not continuously mapped in your slaves memory, individual read operations will be generated for all continuously mapped chunks of memory. This avoids errors when trying to read invalid addresses on the client, and helps to keep the amount of transferred data low. When your slave allows reads at the addresses between your mapped coils/inputs/registers, you can set the options `discrete_read_continuous` (effects coils and discrete inputs) or `registers_read_continuous` (effects all registers) to allow reads at unmapped addresses. This reduces the overall number of read operations by closing the gaps between mapped addresses and discarding the unused data. To further optimize the behavior, you can set a custom value for `discrete_read_separation_gap` and `register_read_separation_gap`. A gap in the mapped address space greater than these values will result in generation of individual read operations. When optimizing, remember that the amount of data for one coil/discrete input is ***1 bit*** and for a register it is ***1 Byte***; the ratio of this parameters may thus be in the range of $8/1$.
+
+```jsonc
+// controlling generation of separate read operations
+{
+    "discrete_read_continuous": true,
+    "discrete_read_separation_gap": 64,
+
+    "registers_read_continuous": false,
+}
+```
+
+
+### byte and word order
+#### byte order
+⚡ YOU *SHOULD* NEVER NEED TO CHANGE THE **BYTE ORDER** ⚡
+
+The byte order is specified to be big endian, per section 4.2 of the modbus specification [1]. The *byte order* describes the order of the two 8 bit bytes that make up one 16 bit register. You may configure the byte order (endianness) to deviate from this specification.
+```jsonc
+// sets byte order: little endian
+{
+    "byteorder_reverse": true
+}
+```
+
+#### word order
+For data wider than one register (16 bit) you can specify a word order. Default is configured to be little endian.
+
+```jsonc
+// sets word order: big endian
+{
+    "wordorder_reverse": true 
+}
+```
+
+### example config
+Below configures a slave that will be mapped as `/mymodbusslave`, with two configured coils to read from and write to, two discrete inputs, and one holding and input register each. All bindings to topics, as `/mymodbusslave/<coil|input|register-name>/[status|write]` for reading and writing to the slave are automatically configured.
+```jsonc
+// modbus-slave configuration example
+{
+    "name": "mymodbusslave",
+
+    "address": "192.168.10.101",
+    "port": 502,
+    "unit": 1,
+
+    "byteorder_reverse": false, // byte order: default, big endian
+    "wordorder_reverse": false, // word order: default, little endian
+
+    "discrete_read_continuous": true,
+    "discrete_read_separation_gap": 64,
+
+    "registers_read_continuous": false,
+
+    "mapping": {
+        "coils": {
+            "gripper": 1,
+            "signal": 2,
+            // ...
+        },
+        "discrete_inputs": {
+            "overload": 10001,
+            "presence": 10010,
+            // ...
+        },
+        "input_registers": {
+            "distance": {
+                "address": 30001,
+                "type": "REAL"
+            },
+            // ...
+        },
+        "holding_registers": {
+            "name": {
+                "address": 40012,
+                "type": "STRING",
+                "length": 12
+            },
+            // ...
+        }
+    }
+}
+```
+
+## references
+[1] [MODBUS Application Protocol Specification; *https://www.modbus.org/docs/Modbus_Application_Protocol_V1_1b3.pdf*](https://www.modbus.org/docs/Modbus_Application_Protocol_V1_1b3.pdf)
+
+[2] [**IEC 61131-3** Programmable controllers - Part 3: Programming languages; *https://en.wikipedia.org/wiki/IEC_61131-3*](https://en.wikipedia.org/wiki/IEC_61131-3#Data_types)

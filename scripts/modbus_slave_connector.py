@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 
 from modbus_slave_connector import ModbusSlaveDevice
 

@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<package format="3">
+  <name>ros_modbus_device</name>
+  <version>0.1.0</version>
+  <description>A node for mapping modbus coils/inputs/registers (in and out) from a slave device to ROS topics</description>
+
+  <license>MPL 2.0</license>
+<!-- 
+  <url type="website">http://ros.org/wiki/ros_modbus_device</url>
+  <url type="bugtracker">https://github.com/bitmeal/ros_modbus_device/issues</url>
+  <url type="repository">https://github.com/bitmeal/ros_modbus_device</url>
+ -->
+  <author email="arne.wendt@tuhh.de">Arne Wendt</author>
+  <maintainer email="arne.wendt@tuhh.de">Arne Wendt</maintainer>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <exec_depend condition="$ROS_PYTHON_VERSION == 2">python-pymodbus</exec_depend>
+  <exec_depend condition="$ROS_PYTHON_VERSION == 3">python3-pymodbus</exec_depend>
+  <exec_depend>rospy</exec_depend>
+  <!-- <test_depend>rostest</test_depend> -->
+</package>

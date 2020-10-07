@@ -1,10 +1,19 @@
 #!/usr/bin/env python3
 
-# from ros_modbus_connector.modbus_slave_device import ModbusSlaveDevice
-from ros_modbus_connector import ModbusSlaveDevice
+from modbus_slave_connector import ModbusSlaveDevice
 
 import json
 import time
+
+import logging
+
+logger = logging.getLogger('modbus_slave_connector')
+ch = logging.StreamHandler()
+ch.setLevel(logging.DEBUG)
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+ch.setFormatter(formatter)
+logger.addHandler(ch)
+
 
 # run standalone
 if __name__ == "__main__":

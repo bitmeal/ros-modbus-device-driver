@@ -1,8 +1,11 @@
-from ros_modbus_connector.util import *
-from ros_modbus_connector.mapping_discrete import *
-from ros_modbus_connector.mapping_register import *
-from ros_modbus_connector.reader_discrete import *
-from ros_modbus_connector.reader_register import *
+import logging
+logger = logging.getLogger(__name__)
+
+from modbus_slave_connector.util import *
+from modbus_slave_connector.mapping_discrete import *
+from modbus_slave_connector.mapping_register import *
+from modbus_slave_connector.reader_discrete import *
+from modbus_slave_connector.reader_register import *
 
 from pymodbus.constants import Endian
 

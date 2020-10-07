@@ -1,4 +1,7 @@
-from ros_modbus_connector.io_manager import IOManager
+import logging
+logger = logging.getLogger(__name__)
+
+from modbus_slave_connector.io_manager import IOManager
 
 from pymodbus.client.sync import ModbusTcpClient as ModbusClient
 

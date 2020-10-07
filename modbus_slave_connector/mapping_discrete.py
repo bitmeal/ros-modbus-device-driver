@@ -1,3 +1,6 @@
+import logging
+logger = logging.getLogger(__name__)
+
 
 class DiscreteInputMapping:
     def __init__(self, **kwargs):
@@ -22,7 +25,7 @@ class DiscreteInputMapping:
 
 class CoilMapping(DiscreteInputMapping):
     def write(self, client, value, unit):
-        print(self.name, "writing:", value)
+        logger.debug("%s: writing %s", self.name, str(value))
         client.write_coil(self.address, value, unit=unit)
 
 class DiscretePadder:

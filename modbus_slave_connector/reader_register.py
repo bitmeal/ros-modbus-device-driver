@@ -1,5 +1,8 @@
-from ros_modbus_connector.mapping_register import RegisterPadder
-from ros_modbus_connector.payload_register import IECPayloadDecoder
+import logging
+logger = logging.getLogger(__name__)
+
+from modbus_slave_connector.mapping_register import RegisterPadder
+from modbus_slave_connector.payload_register import IECPayloadDecoder
 
 import functools
 import math
@@ -31,7 +34,6 @@ class InputRegisterRangeReader:
                 add_padding, _inputs[1:],
                 [_inputs[0]] if not _inputs[0].offset else [RegisterPadder(0.5), _inputs[0]]
             )
-        # print(list(map(lambda e: e.name if hasattr(e, 'name') else 'padder', self.inputs)))
 
     def _decode(self, result):
         if(not result.isError()):
@@ -39,8 +41,7 @@ class InputRegisterRangeReader:
             for input in self.inputs:
                 input.decode(decoder)
         else:
-            # TODO: change logging
-            print("reading failed...")
+            logger.warning("reading registers at addresses [%d..%d] failed!", self.start_address, self.start_address + self.read_count - 1)
 
     def read(self, client, unit):
         result = client.read_input_registers(self.start_address, self.read_count, unit=unit)

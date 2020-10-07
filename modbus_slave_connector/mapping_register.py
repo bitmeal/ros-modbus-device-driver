@@ -1,7 +1,10 @@
-from pymodbus.constants import Endian
+import logging
+logger = logging.getLogger(__name__)
 
-from ros_modbus_connector.mapping_register_IEC_61131_3_types import RegisterTypeMapping
-from ros_modbus_connector.payload_register import IECPayloadBuilder
+from modbus_slave_connector.mapping_register_IEC_61131_3_types import RegisterTypeMapping
+from modbus_slave_connector.payload_register import IECPayloadBuilder
+
+from pymodbus.constants import Endian
 
 
 class InputRegisterMapping:
@@ -46,13 +49,13 @@ class HoldingRegisterMapping(InputRegisterMapping):
 
     def write(self, client, value, unit):
         if(self.size == 0.5):
-            print("writing to 8 bit values is currently not supported!")
+            logger.error("%s: writing an 8 bit value like (%s) is not currently supported!", self.name, self.type)
             return
 
         encoder = IECPayloadBuilder(byteorder=self.byteorder, wordorder=self.wordorder)
         self.encode_to(encoder, value)
         client.write_registers(self.address, encoder.to_registers())
-        print(self.name, "writing:", value)
+        logger.debug("%s: writing %s", self.name, str(value))
 
 
 class RegisterPadder:

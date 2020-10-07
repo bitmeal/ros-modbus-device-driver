@@ -1,5 +1,8 @@
-from ros_modbus_connector.payload_discrete import DiscreteDecoder
-from ros_modbus_connector.mapping_discrete import DiscretePadder
+import logging
+logger = logging.getLogger(__name__)
+
+from modbus_slave_connector.payload_discrete import DiscreteDecoder
+from modbus_slave_connector.mapping_discrete import DiscretePadder
 
 import functools
 import math
@@ -32,8 +35,7 @@ class DiscreteRangeReader:
             for input in self.inputs:
                 input.decode(decoder)
         else:
-            # TODO: change logging
-            print("reading failed...")
+            logger.warning("reading discrete inputs/coils at addresses [%d..%d] failed!", self.start_address, self.start_address + self.read_count - 1)
 
     def read(self, client, unit):
         result = client.read_discrete_inputs(self.start_address, self.read_count, unit=unit)

@@ -1,4 +1,21 @@
 # ros modbus device interface
+MODBUS TCP is understood by a wealth of industrial devices from PLCs to bus couplers. Building a simple interface from ROS to these devices, allows the efficient use of available industrial hardware without any physical interfacing issues; thus allowing for much faster prototyping and development.
+
+This package allows you to configure all inputs and outputs of your bus coupler, exposed variables of you PLC, *[other device]*, for use in ROS; just specify their coil or register address and the matching data type in a JSON file. All device inputs will be published to individual topics with a user specified name. All outputs may be written by publishing to an automatically mapped topic as well. *(**TODO**: add write/output services)* 
+
+*For easy configuration, sensible defaults - in accordance with the MODBUS specification [1] and tested against MODBUS implementations of PLCs/bus couplers - are used, and all supported data types are in accordance with **IEC 61131-3** [2].*
+
+> :pushpin: What are the limitations?
+* :zap: Only modbus **slaves** are supported, but this should cover 95% of the use cases (the node implements a MODBUS master)
+* :zap: 8 bit wide values can not be written to; they can be decoded tough - even two individual ones from one register
+* :zap: No overlapping reads, or multiple reads from the same registers or coils; e.g. reading a *DWORD @ Reg. 0* (Reg. [0..1]) and the second register again as a *WORD @ Reg. 1*
+* :zap: No support for arrays as single read/write/pub/sub operation
+* :zap: Only *Elementary Types* from [2], with the following exceptions are supported: `BOOL`(only as coil/discrete input), **all** *duration* and *time* types, `WCHAR`/`WSTRING`
+
+## running the node
+* :page_facing_up: define device mapping (see below)
+* :computer: run like `$> ...`
+* :tada: profit
 
 ## slave device definition
 Define a slave device to interact with, as a JSON object, by giving it a `name`-property and configuring its `mapping` for:
@@ -15,7 +32,7 @@ Furthermore, configure the connection parameters for your slave-device:
 
 ### mapping coils & discrete inputs
 Coils an discrete inputs store/accept *boolean* values (single bit). Coils allow for read and write access, discrete inputs allow read access only.
-  
+
 
 They are configured as a map, using the desired names as keys and their addresses as assigned values:
 ```jsonc
@@ -71,7 +88,7 @@ See sections and table below for available types and their specification.
         "offset": "high"
     },
     "lowregister": {
-        // ⚡ note the same address value as above 
+        // :pushpin: note the same address value as above 
         "address": 30001,
         "type": "BYTE",
         "offset": "low"
@@ -80,13 +97,15 @@ See sections and table below for available types and their specification.
 ```
 
 #### strings
-Strings require an additional `length` field to be provided! Strings may only consist of 8 bit wide characters, where each 16 bit register holds two characters. The string is read from the given starting address. Length may be an uneven number. ***TODO: will be trimmed?***
+Strings require an additional `length` field to be provided! Strings may only consist of 8 bit wide characters, where each 16 bit register holds two characters (*`WSTRING` is not supported for a lack PLCs to test against*). The string is read from the given starting address. Length may be an uneven number. If your device does not respect the configured byte order when transmitting string, enable `ignore_byteorder` **per every string mapping**. The encoding of the string may be specified using the `encoding` option; see [3] for valid encodings, default is *UTF-8*(`utf-8`).
 ```jsonc
 {
     "somestring": {
         "address": 30010,
         "type": "STRING",
-        "length": 8
+        "length": 8,
+        "encoding": "utf-8",
+        "ignore_byteorder": false
     }
 }
 ```
@@ -95,7 +114,7 @@ Strings require an additional `length` field to be provided! Strings may only co
 *Directly decoding `BOOL` from a register is not supported. Boolean values should be mapped as coils/discrete input or read as `BYTE`, `WORD`, `DWORD`, `LWORD` and read from the resulting array of boolean values.*
 
 #### arrays
-TOOD: all as array?
+**not supported for now**
 
 #### list of types
 |Type       | Bits  | Registers | Representation    | Info              |
@@ -138,7 +157,7 @@ When configuring coils and registers that are not continuously mapped in your sl
 
 ### byte and word order
 #### byte order
-⚡ YOU *SHOULD* NEVER NEED TO CHANGE THE **BYTE ORDER** ⚡
+:zap: YOU *SHOULD* NEVER NEED TO CHANGE THE **BYTE ORDER** :zap:
 
 The byte order is specified to be big endian, per section 4.2 of the modbus specification [1]. The *byte order* describes the order of the two 8 bit bytes that make up one 16 bit register. You may configure the byte order (endianness) to deviate from this specification.
 ```jsonc
@@ -211,3 +230,5 @@ Below configures a slave that will be mapped as `/mymodbusslave`, with two confi
 [1] [MODBUS Application Protocol Specification; *https://www.modbus.org/docs/Modbus_Application_Protocol_V1_1b3.pdf*](https://www.modbus.org/docs/Modbus_Application_Protocol_V1_1b3.pdf)
 
 [2] [**IEC 61131-3** Programmable controllers - Part 3: Programming languages; *https://en.wikipedia.org/wiki/IEC_61131-3*](https://en.wikipedia.org/wiki/IEC_61131-3#Data_types)
+
+[3] [*codecs* — Codec registry and base classes — Python 3.9.0 documentation: Standard Encodings](https://docs.python.org/3/library/codecs.html#standard-encodings)

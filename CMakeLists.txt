@@ -10,6 +10,7 @@ catkin_package()
 catkin_install_python(PROGRAMS
   scripts/ros_modbus_device.py
   scripts/ros_modbus_device
+  scripts/modbus_slave_demo.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
@@ -20,5 +21,5 @@ catkin_install_python(PROGRAMS
 
 # if (CATKIN_ENABLE_TESTING)
 #   find_package(rostest REQUIRED)
-#   add_rostest(test/websocket/test_smoke.test)
+#   add_rostest(sometestfile.test)
 # endif()

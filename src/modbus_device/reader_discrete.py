@@ -1,8 +1,8 @@
 import logging
 logger = logging.getLogger(__name__)
 
-from modbus_slave_connector.payload_discrete import DiscreteDecoder
-from modbus_slave_connector.mapping_discrete import DiscretePadder
+from modbus_device.payload_discrete import DiscreteDecoder
+from modbus_device.mapping_discrete import DiscretePadder
 
 import functools
 import math
@@ -24,7 +24,8 @@ class DiscreteRangeReader:
             # padding is allways only to be inserted BEFORE the currently handeled element!
             def add_padding(acc, i):
                 d_address = i.address - acc[-1].address
-                return [*acc, i] if d_address == 1 else [*acc, DiscretePadder(d_address - 1), i]
+                # return [*acc, i] if d_address == 1 else [*acc, DiscretePadder(d_address - 1), i] #PYTHON3
+                return (acc + [i]) if d_address == 1 else (acc + [DiscretePadder(d_address - 1), i])
             
             # start reduce operation in a defined state with the first element already added
             self.inputs = functools.reduce(add_padding, _inputs[1:], [_inputs[0]])
@@ -38,12 +39,12 @@ class DiscreteRangeReader:
             logger.warning("reading discrete inputs/coils at addresses [%d..%d] failed!", self.start_address, self.start_address + self.read_count - 1)
 
     def read(self, client, unit):
-        result = client.read_discrete_inputs(self.start_address, self.read_count, unit=unit)
+        result = client.read_discrete_inputs(self.start_address, int(self.read_count), unit=unit)
         self._decode(result)
 
 
 class CoilRangeReader(DiscreteRangeReader):
     def read(self, client, unit):
-        result = client.read_coils(self.start_address, self.read_count, unit=unit)
+        result = client.read_coils(self.start_address, int(self.read_count), unit=unit)
         self._decode(result)
 

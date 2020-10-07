@@ -1,11 +1,11 @@
 import logging
 logger = logging.getLogger(__name__)
 
-from modbus_slave_connector.util import *
-from modbus_slave_connector.mapping_discrete import *
-from modbus_slave_connector.mapping_register import *
-from modbus_slave_connector.reader_discrete import *
-from modbus_slave_connector.reader_register import *
+from modbus_device.util import *
+from modbus_device.mapping_discrete import *
+from modbus_device.mapping_register import *
+from modbus_device.reader_discrete import *
+from modbus_device.reader_register import *
 
 from pymodbus.constants import Endian
 
@@ -42,25 +42,45 @@ class IOManager:
         self.__generate_mappings()
         self.__generate_readers()
 
-        self.inputs = {i.name: i for i in [*self.discrete_inputs, *self.coils, *self.input_registers, *self.holding_registers]}
-        self.outputs = {i.name: i for i in [*self.coils, *self.holding_registers]}
+        # self.inputs = {i.name: i for i in [*self.discrete_inputs, *self.coils, *self.input_registers, *self.holding_registers]} #PYTHON3
+        # self.outputs = {i.name: i for i in [*self.coils, *self.holding_registers]} #PYTHON3
+        self.inputs = {i.name: i for i in (self.discrete_inputs + self.coils + self.input_registers + self.holding_registers)}
+        self.outputs = {i.name: i for i in (self.coils + self.holding_registers)}
     
     def __generate_mappings(self):
+        # self.discrete_inputs = [
+        #     DiscreteInputMapping(**{"name": name, "address": address})
+        #     for name, address in self.config['mapping'].get('discrete_inputs', {}).items()
+        # ]
+        # self.coils = [
+        #    CoilMapping(**{"name": name, "address": address})
+        #     for name, address in self.config['mapping'].get('coils', {}).items()
+        # ]
+
+        # self.input_registers = [
+        #     InputRegisterMapping(**{**{"name": name, "byteorder": self.byteorder, "wordorder": self.wordorder}, **config})
+        #     for name, config in self.config['mapping'].get('input_registers', {}).items()
+        # ]
+        # self.holding_registers = [
+        #     HoldingRegisterMapping(**{**{"name": name, "byteorder": self.byteorder, "wordorder": self.wordorder}, **config})
+        #     for name, config in self.config['mapping'].get('holding_registers', {}).items()
+        # ]
+
         self.discrete_inputs = [
-            DiscreteInputMapping(**{"name": name, "address": address})
+            DiscreteInputMapping(name=name, address=address)
             for name, address in self.config['mapping'].get('discrete_inputs', {}).items()
         ]
         self.coils = [
-           CoilMapping(**{"name": name, "address": address})
+           CoilMapping(name=name, address=address)
             for name, address in self.config['mapping'].get('coils', {}).items()
         ]
 
         self.input_registers = [
-            InputRegisterMapping(**{**{"name": name, "byteorder": self.byteorder, "wordorder": self.wordorder}, **config})
+            InputRegisterMapping(name=name, byteorder=self.byteorder, wordorder=self.wordorder, **config)
             for name, config in self.config['mapping'].get('input_registers', {}).items()
         ]
         self.holding_registers = [
-            HoldingRegisterMapping(**{**{"name": name, "byteorder": self.byteorder, "wordorder": self.wordorder}, **config})
+            HoldingRegisterMapping(name=name, byteorder=self.byteorder, wordorder=self.wordorder, **config)
             for name, config in self.config['mapping'].get('holding_registers', {}).items()
         ]
 
@@ -101,11 +121,13 @@ class IOManager:
     # the return value of handler_function is thus expected to be a callable. the value of the
     # register/coil will be passed as a single positional parameter when called.
     def attach_callbacks_discrete(self, handler_function):
-        for i in [*self.discrete_inputs, *self.coils]:
+        #for i in [*self.discrete_inputs, *self.coils]: #PTYHON3
+        for i in (self.discrete_inputs + self.coils):
             i.attach_callback(handler_function(i))
 
     def attach_callbacks_registers(self, handler_function):
-        for i in [*self.input_registers, *self.holding_registers]:
+        # for i in [*self.input_registers, *self.holding_registers]: #PYTHON3
+        for i in (self.input_registers + self.holding_registers):
             i.attach_callback(handler_function(i))
 
     def attach_callbacks(self, handler_function):

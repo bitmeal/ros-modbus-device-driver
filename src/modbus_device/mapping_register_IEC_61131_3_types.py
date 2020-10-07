@@ -94,7 +94,8 @@ class RegisterTypeMapping:
     @staticmethod
     def fix_string_alignment(**kwargs):
         if(not kwargs.get('ignore_byteorder', False)):
-            kwargs = {**kwargs, 'length': kwargs['length'] + kwargs['length']%2}
+            # kwargs = {**kwargs, 'length': kwargs['length'] + kwargs['length']%2} #PYTHON3
+            kwargs.update({'length': kwargs['length'] + kwargs['length']%2})
         return kwargs
 
     @staticmethod

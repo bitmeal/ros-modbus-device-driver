@@ -1,8 +1,8 @@
 import logging
 logger = logging.getLogger(__name__)
 
-from modbus_slave_connector.mapping_register_IEC_61131_3_types import RegisterTypeMapping
-from modbus_slave_connector.payload_register import IECPayloadBuilder
+from modbus_device.mapping_register_IEC_61131_3_types import RegisterTypeMapping
+from modbus_device.payload_register import IECPayloadBuilder
 
 from pymodbus.constants import Endian
 

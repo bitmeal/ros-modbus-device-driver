@@ -14,8 +14,13 @@
   <maintainer email="arne.wendt@tuhh.de">Arne Wendt</maintainer>
 
   <buildtool_depend>catkin</buildtool_depend>
-  <exec_depend condition="$ROS_PYTHON_VERSION == 2">python-pymodbus</exec_depend>
-  <exec_depend condition="$ROS_PYTHON_VERSION == 3">python3-pymodbus</exec_depend>
+  <!--
+    PYMODBUS IN OFFICIAL REPOSITORYS IS TOO OLD. A LOCAL VERSION IS INCLUDED AS SUBMODULE
+    <exec_depend condition="$ROS_PYTHON_VERSION == 2">python-pymodbus</exec_depend>
+    <exec_depend condition="$ROS_PYTHON_VERSION == 3">python3-pymodbus</exec_depend>
+  -->
+  <exec_depend condition="$ROS_PYTHON_VERSION == 2">python-serial</exec_depend>
+  <exec_depend condition="$ROS_PYTHON_VERSION == 3">python3-serial</exec_depend>
   <exec_depend>rospy</exec_depend>
   <!-- <test_depend>rostest</test_depend> -->
 </package>

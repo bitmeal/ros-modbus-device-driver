@@ -58,7 +58,7 @@ class IECPayloadDecoder(BinaryPayloadDecoder):
         # when little endian, bytes are in right order and the list can be concatenated directly
         # when byteoder is big, both lists from the decode_bits operation are reversed, concatenated
         # and the resulting list reversed again
-        return [*(self.decode_byte()[::slice_direction]), *(self.decode_byte()[::slice_direction])][::slice_direction]
+        return ((self.decode_byte()[::slice_direction]) + (self.decode_byte()[::slice_direction]))[::slice_direction]
     
     def __decode_multi_word(self, wordcount):
         # order words/registers depending on wordorder

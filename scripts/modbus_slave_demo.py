@@ -1,13 +1,17 @@
 #!/usr/bin/env python
 
-from modbus_slave_connector import ModbusSlaveDevice
+from __future__ import print_function
+
+import rospy
+
+from modbus_device import ModbusSlaveDevice
 
 import json
 import time
 
 import logging
 
-logger = logging.getLogger('modbus_slave_connector')
+logger = logging.getLogger('modbus_slave_demo')
 ch = logging.StreamHandler()
 ch.setLevel(logging.DEBUG)
 formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')

@@ -3,5 +3,5 @@
     "extensions": ["ms-iot.vscode-ros"],
     "workspaceFolder": "/catkin_ws",
     "workspaceMount": "source=${localWorkspaceFolder},target=/catkin_ws/src/ros_modbus_device,type=bind",
-    "postCreateCommand": "/opt/ros/$ROS_DISTRO/setup.sh && apt-get update && rosdep update && rosdep install --from-paths src --ignore-src --rosdistro $ROS_DISTRO -y && rm -rf /var/lib/apt/lists/*"
+    "postStartCommand": "/opt/ros/$ROS_DISTRO/setup.bash && /catkin_ws/devel/setup.bash && apt-get update && rosdep update && rosdep install --from-paths src --ignore-src --rosdistro $ROS_DISTRO -y"
 }

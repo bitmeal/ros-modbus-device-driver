@@ -1,7 +1,7 @@
 import logging
 logger = logging.getLogger(__name__)
 
-from modbus_slave_connector.io_manager import IOManager
+from modbus_device.io_manager import IOManager
 
 from pymodbus.client.sync import ModbusTcpClient as ModbusClient
 
@@ -13,14 +13,16 @@ class ModbusSlaveDevice:
 
         # connection settings
         self.address = config['address']
-        self.port = config.get('port', 502)
+        self.port = config.get('port', int(502))
         self.unit = config.get('unit', 0x01)
         self.timeout = config.get('timeout_secs', 3)
 
         # make client connection
         self.client = ModbusClient(self.address, port=self.port, timeout=self.timeout)
 
-        self.io_mgr = IOManager(self.client, {**config, "unit": self.unit})
+        # self.io_mgr = IOManager(self.client, {**config, "unit": self.unit}) #PYTHON3
+        config['unit'] = self.unit
+        self.io_mgr = IOManager(self.client, config)
 
         self.inputs = self.io_mgr.inputs
         self.outputs = self.io_mgr.outputs

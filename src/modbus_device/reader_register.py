@@ -1,8 +1,8 @@
 import logging
 logger = logging.getLogger(__name__)
 
-from modbus_slave_connector.mapping_register import RegisterPadder
-from modbus_slave_connector.payload_register import IECPayloadDecoder
+from modbus_device.mapping_register import RegisterPadder
+from modbus_device.payload_register import IECPayloadDecoder
 
 import functools
 import math
@@ -27,7 +27,8 @@ class InputRegisterRangeReader:
             # padding is allways only to be inserted BEFORE the currently handeled element!
             def add_padding(acc, i):
                 d_address = (i.address + i.offset * 0.5) - (acc[-1].address + acc[-1].offset * 0.5 + acc[-1].size)
-                return [*acc, i] if d_address == 0 else [*acc, RegisterPadder(d_address), i]
+                # return [*acc, i] if d_address == 0 else [*acc, RegisterPadder(d_address), i] #PYTHON3
+                return (acc + i) if d_address == 0 else (acc + [RegisterPadder(d_address), i])
             
             # start reduce operation in a defined state with the first element and required padding already added
             self.inputs = functools.reduce(

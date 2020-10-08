@@ -13,6 +13,7 @@ This package allows you to configure all inputs and outputs of your bus coupler,
 * :zap: Only *Elementary Types* from [2], with the following exceptions are supported: `BOOL`(only as coil/discrete input), **all** *duration* and *time* types, `WCHAR`/`WSTRING`
 
 ## running the node
+* build, using `catkin build` from catkin tools; **`catkin_make` is NOT supported**! Install using `pip install -U catkin_tools`, `apt install python-catkin-tools` or see [documentation](https://catkin-tools.readthedocs.io/en/latest/installing.html)
 * :page_facing_up: define device mapping (see below)
 * :computer: run like `$> ...`
 * :tada: profit

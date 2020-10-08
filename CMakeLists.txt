@@ -1,16 +1,20 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(ros_modbus_device)
 
-find_package(catkin REQUIRED)
-
-catkin_python_setup()
+find_package(catkin REQUIRED COMPONENTS rospy catkin_virtualenv)
 
 catkin_package()
+catkin_python_setup()
+catkin_generate_virtualenv()
+
+# catkin virtualenv package
+install(FILES requirements.txt
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
+)
 
 catkin_install_python(PROGRAMS
-  scripts/ros_modbus_device.py
   scripts/ros_modbus_device
-  scripts/modbus_slave_demo.py
+  scripts/modbus_slave_demo
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 

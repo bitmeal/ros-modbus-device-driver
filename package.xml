@@ -13,14 +13,21 @@
   <author email="arne.wendt@tuhh.de">Arne Wendt</author>
   <maintainer email="arne.wendt@tuhh.de">Arne Wendt</maintainer>
 
+  <export>
+    <pip_requirements>requirements.txt</pip_requirements>
+  </export>
+
   <buildtool_depend>catkin</buildtool_depend>
   <!--
-    PYMODBUS IN OFFICIAL REPOSITORYS IS TOO OLD. A LOCAL VERSION IS INCLUDED AS SUBMODULE
+    PYMODBUS IN OFFICIAL REPOSITORYS IS TOO OLD. A SUITABLE VERSION IS BUNDELED USING CATKIN VIRTUALENV
     <exec_depend condition="$ROS_PYTHON_VERSION == 2">python-pymodbus</exec_depend>
     <exec_depend condition="$ROS_PYTHON_VERSION == 3">python3-pymodbus</exec_depend>
   -->
-  <exec_depend condition="$ROS_PYTHON_VERSION == 2">python-serial</exec_depend>
-  <exec_depend condition="$ROS_PYTHON_VERSION == 3">python3-serial</exec_depend>
+  <build_depend>catkin_virtualenv</build_depend>
+  <!-- <depend>pymodbus</depend> -->
+
+  <!-- <exec_depend condition="$ROS_PYTHON_VERSION == 2">python-serial</exec_depend>
+  <exec_depend condition="$ROS_PYTHON_VERSION == 3">python3-serial</exec_depend> -->
   <exec_depend>rospy</exec_depend>
   <!-- <test_depend>rostest</test_depend> -->
 </package>

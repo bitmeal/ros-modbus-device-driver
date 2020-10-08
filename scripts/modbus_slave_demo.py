@@ -2,14 +2,13 @@
 
 from __future__ import print_function
 
-import rospy
-
-from modbus_device import ModbusSlaveDevice
-
+import logging
 import json
 import time
 
-import logging
+import rospy
+from modbus_device import ModbusSlaveDevice
+
 
 logger = logging.getLogger('modbus_slave_demo')
 ch = logging.StreamHandler()

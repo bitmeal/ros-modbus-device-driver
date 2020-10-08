@@ -1,7 +1,7 @@
-# ros modbus device interface
+# ros modbus device driver
 MODBUS TCP is understood by a wealth of industrial devices from PLCs to bus couplers. Building a simple interface from ROS to these devices, allows the efficient use of available industrial hardware without any physical interfacing issues; thus allowing for much faster prototyping and development.
 
-This package allows you to configure all inputs and outputs of your bus coupler, exposed variables of you PLC, *[other device]*, for use in ROS; just specify their coil or register address and the matching data type in a JSON file. All device inputs will be published to individual topics with a user specified name. All outputs may be written by publishing to an automatically mapped topic as well. *(**TODO**: add write/output services)* 
+This package allows you to configure all inputs and outputs of your bus coupler, exposed variables of you PLC, *[other device]*, for use in ROS; just specify their coil or register address and the matching data type in a JSON file. All device inputs will be published to individual topics with a user specified name. All outputs may be written by publishing to an automatically mapped topic as well.
 
 *For easy configuration, sensible defaults - in accordance with the MODBUS specification [1] and tested against MODBUS implementations of PLCs/bus couplers - are used, and all supported data types are in accordance with **IEC 61131-3** [2].*
 
@@ -102,7 +102,7 @@ They are configured as a map, using the desired names as keys and their addresse
 }
 ```
 
-### maping holding & input registers
+### mapping holding & input registers
 Registers are 16 bit wide memory-"blocks" that can be read (input and holding registers) and written to (holding registers only). Registers may be configured to hold (a subset of) the data types defined in **IEC 61131-3** [2]. The types may be wider than 16 bits; in your register configuration you simply specify the start address (lowest address value occupied by a word of the value to be read). Registers are configured in a map with the desired name as key and a map with information about the stored/written type as `type` and the address as `address` as assigned value.
 
 See sections and table below for available types and their specification.
@@ -210,7 +210,7 @@ When configuring coils and registers that are not continuously mapped in your sl
 
 ### byte and word order
 #### byte order
-:zap: YOU *SHOULD* NEVER NEED TO CHANGE THE **BYTE ORDER** :zap:
+:zap: YOU *SHOULD* NEVER NEED TO CHANGE THE *BYTE ORDER* :zap:
 
 The byte order is specified to be big endian, per section 4.2 of the modbus specification [1]. The *byte order* describes the order of the two 8 bit bytes that make up one 16 bit register. You may configure the byte order (endianness) to deviate from this specification.
 ```jsonc
@@ -284,6 +284,7 @@ Below configures a slave that will be mapped as `/mymodbusslave`, with two confi
 
 ## TODO
 * [ ] add config/mapping schema parser; detect errors with meaningful messages before running
+* [ ] write/output using services
 * [ ] support arrays
 * [ ] publish on change only
 * [ ] publish on change and with rate

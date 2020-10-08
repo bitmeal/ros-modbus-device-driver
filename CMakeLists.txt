@@ -13,8 +13,8 @@ install(FILES requirements.txt
 )
 
 catkin_install_python(PROGRAMS
-  scripts/ros_modbus_device
-  scripts/modbus_slave_demo
+  scripts/ros_modbus_device.py
+  scripts/modbus_slave_demo.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 

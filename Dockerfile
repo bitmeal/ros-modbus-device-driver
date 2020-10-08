@@ -1,12 +1,18 @@
 ARG DOCKER_ROS_DISTRO=melodic
 FROM ros:${DOCKER_ROS_DISTRO}
 
+# install catkin_tools
+RUN apt-get update && apt-get install -y \
+    python-catkin-tools\
+    && rm -rf /var/lib/apt/lists/*
+
 # Booststrap workspace.
 ENV CATKIN_DIR=/catkin_ws
 RUN . /opt/ros/$ROS_DISTRO/setup.sh \
  && mkdir -p $CATKIN_DIR/src \
  && cd $CATKIN_DIR \
- && catkin_make
+ && catkin init \
+ && catkin build
 WORKDIR $CATKIN_DIR
 
 # We want the development workspace active all the time.

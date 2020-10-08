@@ -10,7 +10,8 @@ import functools
 
 class IECPayloadBuilder(BinaryPayloadBuilder):
     def __swap_sstring_bytes(self, bytestring):
-        return b''.join([bytes(list(bytestring)[s:s+2][::-1]) for s in range(0,len(bytestring),2)])
+        # return b''.join([bytes(list(bytestring)[s:s+2][::-1]) for s in range(0,len(bytestring),2)])#PYTHON3
+        return b''.join([b''.join(list(bytestring)[s:s+2][::-1]) for s in range(0,len(bytestring),2)])
 
     def add_string(self, value, **kwargs):
         # encode
@@ -76,7 +77,8 @@ class IECPayloadDecoder(BinaryPayloadDecoder):
     
     # expects string to be of even length (%2 == 0)!
     def __swap_sstring_bytes(self, bytestring):
-        return b''.join([bytes(list(bytestring)[s:s+2][::-1]) for s in range(0,len(bytestring),2)])
+        # return b''.join([bytes(list(bytestring)[s:s+2][::-1]) for s in range(0,len(bytestring),2)])#PYTHON3 : different behavior of list(bytestring) and bytes(list)
+        return b''.join([b''.join(list(bytestring)[s:s+2][::-1]) for s in range(0,len(bytestring),2)])
 
     def __trim_decode_bytestring(self, bytestring, encoding):
         term_idx = bytestring.find(b'\x00')

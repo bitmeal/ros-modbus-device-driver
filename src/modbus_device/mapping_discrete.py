@@ -2,7 +2,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-class DiscreteInputMapping:
+class DiscreteInputMapping(object):
     def __init__(self, **kwargs):
         self.name = kwargs['name']
         self.address = kwargs['address']

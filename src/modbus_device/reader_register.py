@@ -28,7 +28,7 @@ class InputRegisterRangeReader:
             def add_padding(acc, i):
                 d_address = (i.address + i.offset * 0.5) - (acc[-1].address + acc[-1].offset * 0.5 + acc[-1].size)
                 # return [*acc, i] if d_address == 0 else [*acc, RegisterPadder(d_address), i] #PYTHON3
-                return (acc + i) if d_address == 0 else (acc + [RegisterPadder(d_address), i])
+                return (acc + [i]) if d_address == 0 else (acc + [RegisterPadder(d_address), i])
             
             # start reduce operation in a defined state with the first element and required padding already added
             self.inputs = functools.reduce(

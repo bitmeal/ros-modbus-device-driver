@@ -283,6 +283,7 @@ Below configures a slave that will be mapped as `/mymodbusslave`, with two confi
 ```
 
 ## TODO
+* [ ] add config/mapping schema parser; detect errors with meaningful messages before running
 * [ ] support arrays
 * [ ] publish on change only
 * [ ] publish on change and with rate

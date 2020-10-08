@@ -7,7 +7,7 @@ from modbus_device.payload_register import IECPayloadBuilder
 from pymodbus.constants import Endian
 
 
-class InputRegisterMapping:
+class InputRegisterMapping(object):
     def __init__(self, **kwargs):
         self.name = kwargs['name']
         self.type = kwargs['type']
@@ -41,7 +41,7 @@ class InputRegisterMapping:
 
 class HoldingRegisterMapping(InputRegisterMapping):
     def __init__(self, **kwargs):
-        super().__init__(**kwargs)
+        super(HoldingRegisterMapping, self).__init__(**kwargs)
 
         self.byteorder = kwargs['byteorder']
         self.wordorder = kwargs['wordorder']

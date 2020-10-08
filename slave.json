@@ -3,7 +3,7 @@
     "address": "192.168.10.113",
     "port": 502,
     "unit": 1,
-    "timeout_secs": 3,
+    "timeout": 3,
     "byteorder_reverse": false,
     "wordorder_reverse": false,
     "discrete_read_continuous": true,

@@ -15,7 +15,7 @@ class ModbusSlaveDevice:
         self.address = config['address']
         self.port = config.get('port', int(502))
         self.unit = config.get('unit', 0x01)
-        self.timeout = config.get('timeout_secs', 3)
+        self.timeout = config.get('timeout', 3)
 
         # make client connection
         self.client = ModbusClient(self.address, port=self.port, timeout=self.timeout)

@@ -7,6 +7,7 @@ class DiscreteInputMapping:
         self.name = kwargs['name']
         self.address = kwargs['address']
         self.value = None
+        self.type = '#DISCRETE'
         self.size = 1
 
         self.callbacks = []

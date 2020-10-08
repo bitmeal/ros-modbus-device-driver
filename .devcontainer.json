@@ -2,6 +2,6 @@
     "dockerFile": "Dockerfile",
     "extensions": ["ms-iot.vscode-ros"],
     "workspaceFolder": "/catkin_ws",
-    "workspaceMount": "source=${localWorkspaceFolder},target=/catkin_ws/src/ros_modbus_device,type=bind",
+    "workspaceMount": "source=${localWorkspaceFolder},target=/catkin_ws/src/ros_modbus_device_driver,type=bind",
     "postCreateCommand": "bash -i -c 'source /root/.bashrc && apt update && rosdep update && rosdep install --from-paths src --ignore-src --rosdistro $ROS_DISTRO -y'"
 }

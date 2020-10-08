@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <package format="3">
-  <name>ros_modbus_device</name>
+  <name>ros_modbus_device_driver</name>
   <version>0.1.0</version>
   <description>A node for mapping modbus coils/inputs/registers (in and out) from a slave device to ROS topics</description>
 
@@ -19,7 +19,9 @@
   <buildtool_depend>catkin</buildtool_depend>
 
   <build_depend>catkin_virtualenv</build_depend>
+  <build_depend>message_generation</build_depend>
 
+  <exec_depend>message_runtime</exec_depend>
   <exec_depend>rospy</exec_depend>
   <export>
     <pip_requirements>requirements.txt</pip_requirements>

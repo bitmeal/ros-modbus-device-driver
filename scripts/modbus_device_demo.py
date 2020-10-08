@@ -1,12 +1,14 @@
 #!/usr/bin/env python
 
+### NO ROS FUNCTIONALITY INCLUDED ###
+
+
 from __future__ import print_function
 
 import logging
 import json
 import time
 
-import rospy
 from modbus_device import ModbusSlaveDevice
 
 

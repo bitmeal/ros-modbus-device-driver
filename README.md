@@ -12,24 +12,76 @@ This package allows you to configure all inputs and outputs of your bus coupler,
 * :zap: No support for arrays as single read/write/pub/sub operation
 * :zap: Only *Elementary Types* from [2], with the following exceptions are supported: `BOOL`(only as coil/discrete input), **all** *duration* and *time* types, `WCHAR`/`WSTRING`
 
-## running the node
-* build, using `catkin build` from catkin tools; **`catkin_make` is NOT supported**! Install using `pip install -U catkin_tools`, `apt install python-catkin-tools` or see [documentation](https://catkin-tools.readthedocs.io/en/latest/installing.html)
-* :page_facing_up: define device mapping (see below)
-* :computer: run like `$> ...`
-* :tada: profit
+
+## using the node
+### building
+Build the node using `catkin build` from *catkin tools*; **`catkin_make` is NOT supported**! Install *catkin tools* using `pip install -U catkin_tools`, `apt install python-catkin-tools` or see [documentation](https://catkin-tools.readthedocs.io/en/latest/installing.html) for your system.
+### running
+```bash
+rosrun ros_modbus_device_driver ros_modbus_device.py _mapping:=devicemapping.json
+```
+1. :page_facing_up: define a device and its mapping (see below)
+2. :computer: run the driver node, using `rosrun` and provide the path to your config file, either as command line argument `--mapping <path>`, or ROS parameter `_mapping:=<path>`
+3. :tada: *profit*
+
+#### ROS parameters and command line arguments
+All [connection parameters](#connection-parameters) are exposed as *private* ROS parameters and command line arguments. Apart from using ROS parameters in a `.launch` file, they can be passed on the command line in the form of `_parameter:=value`. Traditional command line arguments have to be supplied like `--parameter value`. To run multiple driver instances for multiple divices of the same type, use the `name` parameter per device/driver instance. Available parameters/arguments:
+| ROS param | :computer: command line argument |
+|---|---|
+| `name`        | `--name`      |
+| `address`	    | `--address`	|
+| `port`	    | `--port`	    |
+| `unit`	    | `--unit`	    |
+| `timeout`	    | `--timeout`	|
+| `rate`	    | `--rate`	    |
+
+> :pushpin: Why is only this subset of options configurable on the command line or through ROS parameters?
+1. You **need** a device mapping/config file anyways; the IO configuration through parameters and arguments is simply not feasible.
+2. A mapping is created per specific device. Limiting the startup parameters, forces you to create a sane configuration file, that may be used for **any instance** of the mapped device. *Neat, is it?*
+3. *Effectively see 2.*: The connection parameters and your timing requirements may vary between two instances of the same device, as well as the descriptor/name you want to use. All other configuration options are specific to the device and there is no point in changing e.g. your byte order at startup.
+
+### interfacing
+The node automatically maps your IOs to topics in the way shown below. `<name>` is read from the device config (`"name"`), the command line `--name` or a ROS parameter `name` and represents the namespace of your MODBUS device (the running node itself uses an anonymous namespace). `<mappin-name>` is the name given to an IO in your device mapping.
+
+| direction | topic | mapping type |
+|---|---|---|
+| reading | `/<name>/<mapping-name>` | *coils, discrete inputs,* all *registers* |
+| writing | `/<name>/<mapping-name>/write` | *coils, holding registers* |
+
 
 ## slave device definition
-Define a slave device to interact with, as a JSON object, by giving it a `name`-property and configuring its `mapping` for:
+Define a slave device to interact with, as a JSON object, by giving it a `name`-property and configuring its connection parameters and `mapping`s for:
 * Coils [`coils`] (digital I/O *rw*) by assigning an address-value to a key as its identifier
 * Discrete inputs [`discrete_inputs`] (digital IN *ro*) like the coils
 * Holding registers [`holding_registers`] (analog I/O, process data *rw*)
 * Input registers [`input_registers`] (analog IN, process data *ro*) like the holding registers
 *for the used terminology, refer to [1] section 4.3*
 
-Furthermore, configure the connection parameters for your slave-device:
-* `address`
-* `port`
-* `unit` (modbus unit ID).
+### connection parameters
+Configure the connection to your slave-device (example below):
+* IP address: `address`
+* Port: `port`; default=`502`
+* MODBUS unit ID: `unit`; default=`0x01`
+* Connection/read timeout: `timeout` (in seconds); default=`3`
+* Rate to poll for changes as `rate` (in [*Hz*]); default=`10`
+
+
+
+```jsonc
+// example basic configuration
+{
+    "name": "mymodbusslave",
+
+    "address": "192.168.10.101",
+    "port": 502,
+    "unit": 1,
+    "timeout": 3,
+
+    "rate": 20,
+
+    // ...
+}
+```
 
 ### mapping coils & discrete inputs
 Coils an discrete inputs store/accept *boolean* values (single bit). Coils allow for read and write access, discrete inputs allow read access only.
@@ -188,6 +240,9 @@ Below configures a slave that will be mapped as `/mymodbusslave`, with two confi
     "address": "192.168.10.101",
     "port": 502,
     "unit": 1,
+    "timeout": 3,
+
+    "rate": 20,
 
     "byteorder_reverse": false, // byte order: default, big endian
     "wordorder_reverse": false, // word order: default, little endian
@@ -226,6 +281,14 @@ Below configures a slave that will be mapped as `/mymodbusslave`, with two confi
     }
 }
 ```
+
+## TODO
+* [ ] support arrays
+* [ ] publish on change only
+* [ ] publish on change and with rate
+* [ ] configure latching
+* [ ] support write of individual 8 bit values
+* [ ] simple math for scaling numeric IOs (`*INT`, `*REAL`)
 
 ## references
 [1] [MODBUS Application Protocol Specification; *https://www.modbus.org/docs/Modbus_Application_Protocol_V1_1b3.pdf*](https://www.modbus.org/docs/Modbus_Application_Protocol_V1_1b3.pdf)

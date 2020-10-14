@@ -25,7 +25,7 @@ rosrun ros_modbus_device_driver ros_modbus_device.py _mapping:=devicemapping.jso
 3. :tada: *profit*
 
 #### ROS parameters and command line arguments
-All [connection parameters](#connection-parameters) are exposed as *private* ROS parameters and command line arguments. Apart from using ROS parameters in a `.launch` file, they can be passed on the command line in the form of `_parameter:=value`. Traditional command line arguments have to be supplied like `--parameter value`. To run multiple driver instances for multiple divices of the same type, use the `name` parameter per device/driver instance. Available parameters/arguments:
+All [connection parameters](#connection-parameters) are exposed as *private* (namespaced) ROS parameters, and command line arguments. Apart from using ROS parameters in a `.launch` file, they can be passed on the command line in the form of `_parameter:=value`. Traditional command line arguments have to be supplied like `--parameter value`. To run multiple driver instances for multiple divices of the same type, use the `name` parameter per device/driver instance. Available parameters/arguments:
 | ROS param | :computer: command line argument |
 |---|---|
 | `name`        | `--name`      |
@@ -283,14 +283,35 @@ Below configures a slave that will be mapped as `/mymodbusslave`, with two confi
 ```
 
 ## TODO
+* [ ] add tests
 * [ ] add config/mapping schema parser; detect errors with meaningful messages before running
+* [x] use YAML config file (more *ros-like*)
+* [ ] translate examples to YAML
 * [ ] write/output using services
 * [ ] support arrays
 * [ ] publish on change only
 * [ ] publish on change and with rate
-* [ ] configure latching
-* [ ] support write of individual 8 bit values
+* [ ] configure latching & queue size
+* [ ] support writing individual 8 bit values
 * [ ] simple math for scaling numeric IOs (`*INT`, `*REAL`)
+
+## tested hardware
+* **WAGO PFC100** PLC: Exposing select PLC program variables. Tested all supported data types. *Assumed to be representative for the 750-8xx series.*
+* **Beckhoff BC9000** PLC, configured as simple bus coupler: Reading and writing digital in- and outputs, reading analog inputs and reading and writing registers for communication with RS-422/485 module.
+* **Beckhoff BK9000** coupler: Tests as for **BC9000**.
+
+### hardware info
+Some help for using your hardware:
+#### Beckhoff
+Beckhoff couplers, and PLCs (e.g. BC9000) configured accordingly, map the connected IOs in the following way. Be sure to use the right type of mapping in your configuration, as addressing depends on the requested MODBUS function.
+* discrete in: starting at address 0, counting input channels in the order of attached *input* modules
+* coils: starting at address 0, counting output channels in the order of attached *output* modles
+* input registers: starting at address 0, counting channels in order of attached *input* modules. Inputs may consume two registers each, with the actual data register being the second one; e.g.: first analog input data is at register 1, the second at 3, ...
+* holding registers: starting at address 2048, counting in order of attached *output* modules
+A Beckhoff BC9000 can be transformed into a BK9000 by performing a hardware reset and setting registers 4-11 to `0x0000` using TwinCAT.
+
+## license
+The source code provided in this repository is licensed under MPL 2.0. *A different license may apply to binary versions of this software!*
 
 ## references
 [1] [MODBUS Application Protocol Specification; *https://www.modbus.org/docs/Modbus_Application_Protocol_V1_1b3.pdf*](https://www.modbus.org/docs/Modbus_Application_Protocol_V1_1b3.pdf)

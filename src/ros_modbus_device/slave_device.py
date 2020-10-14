@@ -47,7 +47,7 @@ class ROSModbusSlaveDevice:
     
     def run(self):
         while not rospy.is_shutdown():
-            self.modbus_slave.read()
+            self.modbus_slave.fetch()
             self.rate.sleep()
 
 

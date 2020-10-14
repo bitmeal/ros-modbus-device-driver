@@ -8,6 +8,7 @@ from modbus_device.reader_discrete import *
 from modbus_device.reader_register import *
 
 from pymodbus.constants import Endian
+import threading
 
 import math
 
@@ -25,7 +26,9 @@ class IOManager:
 
         self.readers = []
 
-        self.client = client
+        # private client to guarantee thread safe wrapping
+        self.__client_lock = threading.Lock()
+        self.__client = client
         self.unit = config['unit']
         self.config = config
 
@@ -111,11 +114,13 @@ class IOManager:
         self.readers += [HoldingRegisterRangeReader(group, **endianness) for group in group_list(group_registers, self.holding_registers)]
 
     def write(self, mapping, value):
-        self.outputs[mapping].write(self.client, value, self.unit)
+        with self.__client_lock:
+            self.outputs[mapping].write(self.__client, value, self.unit)
     
     def read(self):
-        for reader in self.readers:
-            reader.read(self.client, self.unit)
+        with self.__client_lock:
+            for reader in self.readers:
+                reader.read(self.__client, self.unit)
     
     # calls handler_function with each input object and stores the returned value as a callback
     # the return value of handler_function is thus expected to be a callable. the value of the

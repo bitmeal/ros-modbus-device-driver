@@ -15,3 +15,8 @@
 .pydevproject
 .idea
 __pycache__
+
+# ignore test/local configs
+*.json
+!.*.json
+!example.json

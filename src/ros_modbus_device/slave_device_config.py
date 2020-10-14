@@ -1,6 +1,6 @@
 import sys
 import argparse
-import json
+import yaml
 
 import logging
 logger = logging.getLogger(__name__)
@@ -72,7 +72,7 @@ class ROSModbusSlaveDeviceConfig:
         try:
             with open(path) as file:
                 logger.info("successfully opened: %s", path)
-                return json.load(file)
+                return yaml.safe_load(file)
         except:
             logger.error("could not open or read a config/mapping file at '%s'", path)
             sys.exit(-1)

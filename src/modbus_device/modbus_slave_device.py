@@ -17,20 +17,23 @@ class ModbusSlaveDevice:
         self.unit = config.get('unit', 0x01)
         self.timeout = config.get('timeout', 3)
 
-        # make client connection
-        self.client = ModbusClient(self.address, port=self.port, timeout=self.timeout)
+        # make client
+        # client is not accessible from outside to guarantee thread safety from
+        # IOManager. IOManager does not instantiate the client itself, as addressing
+        # should be in the scope of a higher abstraction layer (the "device/slave")
+        self.__client = ModbusClient(self.address, port=self.port, timeout=self.timeout)
 
         # self.io_mgr = IOManager(self.client, {**config, "unit": self.unit}) #PYTHON3
         config['unit'] = self.unit
-        self.io_mgr = IOManager(self.client, config)
+        self.io_mgr = IOManager(self.__client, config)
 
         self.inputs = self.io_mgr.inputs
         self.outputs = self.io_mgr.outputs
 
     def connect(self):
-        self.client.connect()
+        self.__client.connect()
     
-    def read(self):
+    def fetch(self):
         self.io_mgr.read()
 
     def write(self, mapping, value):

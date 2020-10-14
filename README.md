@@ -25,7 +25,7 @@ rosrun ros_modbus_device_driver ros_modbus_device.py _mapping:=devicemapping.jso
 3. :tada: *profit*
 
 #### ROS parameters and command line arguments
-All [connection parameters](#connection-parameters) are exposed as *private* (namespaced) ROS parameters, and command line arguments. Apart from using ROS parameters in a `.launch` file, they can be passed on the command line in the form of `_parameter:=value`. Traditional command line arguments have to be supplied like `--parameter value`. To run multiple driver instances for multiple divices of the same type, use the `name` parameter per device/driver instance. Available parameters/arguments:
+All [connection parameters](#connection-parameters) are exposed as *private* (namespaced) ROS parameters, and command line arguments. Apart from using ROS parameters in a `.launch` file, they can be passed on the command line in the form of `_parameter:=value`. Traditional command line arguments have to be supplied like `--parameter value`. To run multiple driver instances for multiple divices of the same type, use the `name` parameter, assigning a unique name per device/driver instance. Available parameters/arguments:
 | ROS param | :computer: command line argument |
 |---|---|
 | `name`        | `--name`      |

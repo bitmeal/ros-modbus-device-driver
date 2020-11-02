@@ -19,9 +19,9 @@ catkin_generate_virtualenv()
 add_message_files(
   FILES
   Byte.msg
-  Word.msg
-  Dword.msg
-  Lword.msg
+  WORD.msg
+  DWORD.msg
+  LWORD.msg
 )
 
 # generate message bindings

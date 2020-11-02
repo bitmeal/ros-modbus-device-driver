@@ -1,15 +1,19 @@
 {
     "name": "mymodbusslave",
+
     "address": "192.168.10.113",
     "port": 502,
     "unit": 1,
     "timeout": 3,
+
     "byteorder_reverse": false,
     "wordorder_reverse": false,
+
     "discrete_read_continuous": true,
     "discrete_read_separation_gap": 64,
     "registers_read_continuous": true,
     "registers_read_separation_gap": 12,
+
     "mapping": {
         "coils": {
             "gripper": 32768

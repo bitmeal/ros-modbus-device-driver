@@ -19,4 +19,4 @@ __pycache__
 # ignore test/local configs
 *.json
 !.*.json
-!example.json
+!*example*.json

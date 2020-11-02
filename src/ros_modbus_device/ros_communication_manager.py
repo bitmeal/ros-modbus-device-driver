@@ -17,8 +17,8 @@ from std_msgs.msg import Char
 from std_msgs.msg import String
 from ros_modbus_device_driver.msg import Byte as BYTE
 from ros_modbus_device_driver.msg import Word as WORD
-from ros_modbus_device_driver.msg import Lword as LWORD
-from ros_modbus_device_driver.msg import Dword as DWORD
+from ros_modbus_device_driver.msg import LWord as LWORD
+from ros_modbus_device_driver.msg import DWord as DWORD
 
 class ROSCommunicationManager:
     mapping = {

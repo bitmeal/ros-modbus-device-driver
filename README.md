@@ -15,10 +15,10 @@ This package allows you to configure all inputs and outputs of your bus coupler,
 
 ## using the node
 ### building
-Build the node using `catkin build` from *catkin tools*; **`catkin_make` is NOT supported**! Install *catkin tools* using `pip install -U catkin_tools`, `apt install python-catkin-tools` or see [documentation](https://catkin-tools.readthedocs.io/en/latest/installing.html) for your system.
+Install dependencies using `rosdep install -y --from-paths ros-modbus-device-driver` and build the node using `catkin build` from *catkin-tools*; **`catkin_make` is NOT supported**! Install *catkin-tools* using `pip install -U catkin_tools`, `apt install python-catkin-tools` for ROS versions up to *melodic*, `apt install python3-catkin-tools python3-osrf-pycommon` for ROS *noetic* and onwards, or see [documentation](https://catkin-tools.readthedocs.io/en/latest/installing.html) for your system.
 ### running
 ```bash
-rosrun ros_modbus_device_driver ros_modbus_device.py _mapping:=devicemapping.json
+rosrun ros_modbus_device_driver modbus_device_driver.py _mapping:=devicemapping.json
 ```
 1. :page_facing_up: define a device and its mapping (see below)
 2. :computer: run the driver node, using `rosrun` and provide the path to your config file, either as command line argument `--mapping <path>`, or ROS parameter `_mapping:=<path>`
@@ -308,6 +308,8 @@ Beckhoff couplers, and PLCs (e.g. BC9000) configured accordingly, map the connec
 * coils: starting at address 0, counting output channels in the order of attached *output* modles
 * input registers: starting at address 0, counting channels in order of attached *input* modules. Inputs may consume two registers each, with the actual data register being the second one; e.g.: first analog input data is at register 1, the second at 3, ...
 * holding registers: starting at address 2048, counting in order of attached *output* modules
+
+
 A Beckhoff BC9000 can be transformed into a BK9000 by performing a hardware reset and setting table 2 registers 4-11 to `0x0000` using TwinCAT.
 
 ## license

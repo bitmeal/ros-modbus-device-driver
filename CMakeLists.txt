@@ -10,9 +10,31 @@ find_package(catkin REQUIRED
     message_generation
 )
 
+# get ROS python interpreter version based on ROS_PYTHON_VERSION or ROS_DISTRO envvar
+if(DEFINED ENV{ROS_PYTHON_VERSION})
+  set(PYTHON_VENV_INTERPRETER python$ENV{ROS_PYTHON_VERSION})
+else()
+  message(WARNING "environment variable ROS_PYTHON_VERSION not defined! testing for ROS_DISTRO...")
+  # test ROS_DISTRO name
+  if(DEFINED ENV{ROS_DISTRO})
+    string(TOLOWER $ENV{ROS_DISTRO} ROS_DISTRO_NORM)
+    if(${ROS_DISTRO_NORM} STRLESS noetic)
+      set(PYTHON_VENV_INTERPRETER python2)
+    else()
+      set(PYTHON_VENV_INTERPRETER python3)
+    endif()
+    message(STATUS "assuming ${PYTHON_VENV_INTERPRETER} based on ROS distro $ENV{ROS_DISTRO}")
+  else()
+    message(FATAL_ERROR "non of environment varibales ROS_PYTHON_VERSION or ROS_DISTRO are defined! cannot identify python interpreter!")
+  endif()
+endif()
+message(STATUS "using python interpreter ${PYTHON_VENV_INTERPRETER}")
+
 # init python environment
 catkin_python_setup()
-catkin_generate_virtualenv()
+catkin_generate_virtualenv(
+  PYTHON_INTERPRETER ${PYTHON_VENV_INTERPRETER}
+)
 
 
 # add message definitions

@@ -308,7 +308,7 @@ Beckhoff couplers, and PLCs (e.g. BC9000) configured accordingly, map the connec
 * coils: starting at address 0, counting output channels in the order of attached *output* modles
 * input registers: starting at address 0, counting channels in order of attached *input* modules. Inputs may consume two registers each, with the actual data register being the second one; e.g.: first analog input data is at register 1, the second at 3, ...
 * holding registers: starting at address 2048, counting in order of attached *output* modules
-A Beckhoff BC9000 can be transformed into a BK9000 by performing a hardware reset and setting registers 4-11 to `0x0000` using TwinCAT.
+A Beckhoff BC9000 can be transformed into a BK9000 by performing a hardware reset and setting table 2 registers 4-11 to `0x0000` using TwinCAT.
 
 ## license
 The source code provided in this repository is licensed under MPL 2.0. *A different license may apply to binary versions of this software!*

@@ -15,7 +15,7 @@ This package allows you to configure all inputs and outputs of your bus coupler,
 
 ## using the node
 ### building
-Build the node using `catkin build` from *catkin tools*; **`catkin_make` is NOT supported**! Install *catkin tools* using `pip install -U catkin_tools`, `apt install python-catkin-tools` or see [documentation](https://catkin-tools.readthedocs.io/en/latest/installing.html) for your system.
+Install dependencies using `rosdep install -y --from-paths ros-modbus-device-driver` and build the node using `catkin build` from *catkin-tools*; **`catkin_make` is NOT supported**! Install *catkin-tools* using `pip install -U catkin_tools`, `apt install python-catkin-tools` for ROS versions up to *melodic*, `apt install python3-catkin-tools python3-osrf-pycommon` for ROS *noetic* and onwards, or see [documentation](https://catkin-tools.readthedocs.io/en/latest/installing.html) for your system.
 ### running
 ```bash
 rosrun ros_modbus_device_driver modbus_device_driver.py _mapping:=devicemapping.json

@@ -5,7 +5,7 @@ from catkin_pkg.python_setup import generate_distutils_setup
 
 d = generate_distutils_setup(
     packages=[
-        'ros_modbus_device_driver',
+        # 'ros_modbus_device_driver',
         'ros_modbus_device',
         'modbus_device'
     ],

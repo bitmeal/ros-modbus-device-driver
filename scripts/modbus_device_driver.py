@@ -22,5 +22,10 @@ rospy.init_node('modbus_device_driver', anonymous=True)
 
 modbus_device = ROSModbusSlaveDevice()
 
-modbus_device.connect()
-modbus_device.run()
+logger.info("connecting to: %s:%d", modbus_device.config.config['address'], modbus_device.config.config['port'])
+while not modbus_device.connect() and not rospy.is_shutdown():
+    rospy.sleep(1)
+    print('.', end='', flush=True)
+    
+if not rospy.is_shutdown():
+    modbus_device.run()

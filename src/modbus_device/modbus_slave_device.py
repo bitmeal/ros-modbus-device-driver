@@ -31,7 +31,7 @@ class ModbusSlaveDevice:
         self.outputs = self.io_mgr.outputs
 
     def connect(self):
-        self.__client.connect()
+        return self.__client.connect()
     
     def fetch(self):
         self.io_mgr.read()

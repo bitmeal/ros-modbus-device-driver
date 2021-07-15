@@ -43,7 +43,7 @@ class ROSModbusSlaveDevice:
         return ns_name(name) if self.ns else '/{}/{}'.format(self.name, name.strip('/'))
 
     def connect(self):
-        self.modbus_slave.connect()
+        return self.modbus_slave.connect()
     
     def run(self):
         while not rospy.is_shutdown():

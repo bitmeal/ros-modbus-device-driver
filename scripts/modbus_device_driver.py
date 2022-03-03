@@ -25,7 +25,7 @@ modbus_device = ROSModbusSlaveDevice()
 logger.info("connecting to: %s:%d", modbus_device.config.config['address'], modbus_device.config.config['port'])
 while not modbus_device.connect() and not rospy.is_shutdown():
     rospy.sleep(1)
-    print('.', end='', flush=True)
+    logger.info("Retrying connecting to: %s:%d", modbus_device.config.config['address'], modbus_device.config.config['port'])
     
 if not rospy.is_shutdown():
     modbus_device.run()

@@ -73,6 +73,7 @@ class ROSModbusSlaveDeviceConfig:
             with open(path) as file:
                 logger.info("successfully opened: %s", path)
                 return yaml.safe_load(file)
-        except:
+        except BaseException as err:
             logger.error("could not open or read a config/mapping file at '%s'", path)
+            logger.error("Unexpected error: {}".format(err))
             sys.exit(-1)
